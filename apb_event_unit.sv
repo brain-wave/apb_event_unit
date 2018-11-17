@@ -31,6 +31,8 @@ module apb_event_unit
     input  logic               [31:0] irq_i,
     input  logic               [31:0] event_i,
     output logic               [31:0] irq_o,
+    input  logic                      irq_ack_i, // core acks pending interrupt for 1 cycle after entering ISR
+    input  logic                [4:0] irq_id_i,
 
     // Sleep control
     input  logic                      fetch_enable_i,
@@ -97,7 +99,9 @@ module apb_event_unit
         .PSLVERR  ( pslverr[0]  ),
 
         .signal_i ( irq_i       ), // generic signal could be an interrupt or an event
-        .irq_o    ( irq_o       )
+        .irq_o    ( irq_o       ),
+        .irq_ack_i( irq_ack_i   ),
+        .irq_id_i ( irq_id_i    )
     );
 
 
@@ -120,7 +124,9 @@ module apb_event_unit
         .PSLVERR  ( pslverr[1]  ),
 
         .signal_i ( event_i     ), // generic signal could be an interrupt or an event
-        .irq_o    ( events      )
+        .irq_o    ( events      ),
+        .irq_ack_i( irq_ack_i   ),
+        .irq_id_i ( irq_id_i    )
     );
 
 

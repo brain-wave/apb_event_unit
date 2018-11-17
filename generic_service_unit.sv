@@ -27,8 +27,12 @@ module generic_service_unit
     output logic                      PSLVERR,
 
     input  logic               [31:0] signal_i, // generic signal could be an interrupt or an event
-    output logic               [31:0] irq_o
+    output logic               [31:0] irq_o,
+    input  logic                      irq_ack_i,
+    input  logic                [4:0] irq_id_i // one-hot encoding ((e.g. 0b0011 -> 0b1000)
+    
 );
+
 
     // registers
     logic [0:`REGS_MAX_IDX] [31:0]  regs_q, regs_n;
@@ -87,13 +91,11 @@ module generic_service_unit
         pending_int = pending_int | regs_q[`REG_SET_PENDING];
 
         // clear pending interrupts
-
         for (int i = 0; i < 32; i++)
         begin
-            if (regs_q[`REG_CLEAR_PENDING][i])
+            if (regs_q[`REG_CLEAR_PENDING][i] | (irq_ack_i && irq_id_i == i))
                 pending_int[i] = 1'b0;
         end
-
 
         // written from APB bus
         if (PSEL && PENABLE && PWRITE)
