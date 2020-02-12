@@ -28,7 +28,7 @@
 
 // number of registers per (interrupt, event) service unit - 8 regs in total
 `define REGS_MAX_IDX			'd3 // number of bits needed to access all registers
-`define REGS_MAX_ADR				'd2
+`define REGS_MAX_ADR			'd2
 
 `define REG_ENABLE 				2'b00
 `define REG_PENDING      		2'b01
@@ -41,4 +41,10 @@
 `define REG_SLEEP_STATUS		2'b1
 
 `define SLEEP_ENABLE			1'b0
+`define EXT_SLEEP_ENABLE        1'b1
 `define SLEEP_STATUS 			1'b0
+`define EXT_SLEEP_STATUS        1'b1
+
+// time constraints for extended sleep mode
+`define REF_CLK_FREQ            32768
+`define MIN_WAKEUP_DELAY        1000 //50000

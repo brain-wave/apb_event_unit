@@ -16,6 +16,7 @@ module apb_event_unit
 )
 (
     input  logic                      clk_i, //clk bypass for synch ff
+    input  logic                      clk32_i, //fixed 32khz clk for timing
     input  logic                      HCLK,
     input  logic                      HRESETn,
     input  logic [APB_ADDR_WIDTH-1:0] PADDR,
@@ -38,7 +39,12 @@ module apb_event_unit
     input  logic                      fetch_enable_i,
     output logic                      fetch_enable_o,
     output logic                      clk_gate_core_o, // output to core's clock gate to
-    input  logic                      core_busy_i
+    input  logic                      core_busy_i,
+    
+    // Memory Sleep control
+    output logic                      mem_sleep_o,
+    output logic                      mem_gate_small_o,
+    output logic                      mem_gate_large_o
 );
 
     logic [31:0] events;
@@ -137,6 +143,7 @@ module apb_event_unit
     )
     i_sleep_unit
     (
+        .clk32_i         ( clk32_i          ),
         .HCLK            ( HCLK             ),
         .HRESETn         ( HRESETn          ),
         .PADDR           ( PADDR            ),
@@ -152,8 +159,12 @@ module apb_event_unit
         .event_i         ( |events          ), // event signal - for sleep ctrl
         .core_busy_i     ( core_busy_i      ), // check if core is busy
         .fetch_en_o      ( fetch_enable_int ),
-        .clk_gate_core_o ( clk_gate_core_o  ) // output to core's clock gate to
-                                              //signal in order to give the core enough time after wakeup to catch the signal
+        .clk_gate_core_o ( clk_gate_core_o  ), // output to core's clock gate to
+                                               //signal in order to give the core enough time after wakeup to catch the signal
+        
+        .mem_sleep_o     ( mem_sleep_o      ), // sleep pin control
+        .mem_gate_small_o( mem_gate_small_o ), // memory small embedded switch control
+        .mem_gate_large_o( mem_gate_large_o )  // memory large embedded switch control
     );
 
     // fetch enable synchronizer part
