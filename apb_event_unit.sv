@@ -15,8 +15,8 @@ module apb_event_unit
     parameter APB_ADDR_WIDTH = 12  //APB slaves are 4KB by default
 )
 (
-    input  logic                      clk_i, //clk bypass for synch ff
     input  logic                      clk32_i, //fixed 32khz clk for timing
+    input  logic                      clk32_en_i, 
     input  logic                      HCLK,
     input  logic                      HRESETn,
     input  logic [APB_ADDR_WIDTH-1:0] PADDR,
@@ -144,6 +144,7 @@ module apb_event_unit
     i_sleep_unit
     (
         .clk32_i         ( clk32_i          ),
+        .clk32_en_i      ( clk32_en_i       ),
         .HCLK            ( HCLK             ),
         .HRESETn         ( HRESETn          ),
         .PADDR           ( PADDR            ),
@@ -168,7 +169,7 @@ module apb_event_unit
     );
 
     // fetch enable synchronizer part
-    always_ff @(posedge clk_i, negedge HRESETn)
+    always_ff @(posedge HCLK, negedge HRESETn)
     begin
         if(~HRESETn)
         begin
