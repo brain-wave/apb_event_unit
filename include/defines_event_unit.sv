@@ -46,5 +46,6 @@
 `define EXT_SLEEP_STATUS        1'b1
 
 // time constraints for extended sleep mode
-`define REF_CLK_FREQ            32768
+`define REF_CLK_FREQ            0.032768 // 32Khz
+`define SYS_CLK_FREQ            100 // 100MHz
 `define MIN_WAKEUP_DELAY        1000 //50000

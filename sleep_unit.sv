@@ -39,7 +39,8 @@ module sleep_unit
     output logic                      mem_gate_large_o
 );
 
-    localparam integer DELAY_TICKS = $ceil((`REF_CLK_FREQ * `MIN_WAKEUP_DELAY)/(1.0*10**9));
+    localparam integer DELAY_TICKS = $ceil((`REF_CLK_FREQ * `MIN_WAKEUP_DELAY)/(1.0*10**3));
+    //localparam integer DELAY_TICKS = $ceil((`SYS_CLK_FREQ * `MIN_WAKEUP_DELAY)/(1.0*10**3));
 
     enum    logic[2:0]      {RUN, SHUTDOWN, SLEEP, EXT_SLEEP, WAKEUP_S1, WAKEUP_S2} SLEEP_STATE_N, SLEEP_STATE_Q;
     // registers
@@ -113,20 +114,24 @@ module sleep_unit
             WAKEUP_S1:
             begin
                if (s_rise_ls_clk)
-                    cntr_n = cntr_q + 1'b1;
-               if (DELAY_TICKS == cntr_q) begin // if right amount of time expired...
-                    SLEEP_STATE_N = WAKEUP_S2;
-                    cntr_n = 0;
+               begin
+                 cntr_n = cntr_q + 1'b1;
+                 if (DELAY_TICKS-1 == cntr_q) begin // if right amount of time expired...
+                   SLEEP_STATE_N = WAKEUP_S2;
+                   cntr_n = 0;
+                 end
                end
             end
             
             WAKEUP_S2:
             begin
-               if (s_rise_ls_clk)
-                    cntr_n = cntr_q + 1'b1;
-               if (DELAY_TICKS == cntr_q) begin // if right amount of time expired...
+               if (s_rise_ls_clk) 
+               begin
+                 cntr_n = cntr_q + 1'b1;
+                 if (DELAY_TICKS-1 == cntr_q) begin // if right amount of time expired...
                     SLEEP_STATE_N = RUN;
                     cntr_n = 0;
+                 end
                end
             end
 
@@ -319,7 +324,7 @@ module sleep_unit
         begin
             SLEEP_STATE_Q   <= SLEEP_STATE_N;
             regs_q          <= regs_n;
-            cntr_q <= cntr_n;
+            cntr_q          <= cntr_n;
         end
     end
 
